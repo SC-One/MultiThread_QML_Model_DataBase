@@ -10,14 +10,12 @@
 
 NumbersDB::NumbersDB(QObject *parent)
     : QObject(parent),
-      db{new QSqlDatabase}
+      tableName{"Numbers"}
 
 {
-  createDB();
-  model.reset(new NumbersSqlTableModel(this, *(db.get())));
+  createTable();
+  model.reset(new NumbersSqlTableModel(this, *(dbSQLITE)));
   initMain();
-  model->record(0);
-  model->record(1);
 }
 
 void NumbersDB::addFakeValues() {
@@ -29,13 +27,13 @@ void NumbersDB::addFakeValues() {
   model->database().transaction();
   QSqlRecord record = model->record();
   model->select();
-  record.setValue("value", "2");
-  record.setValue("date", "21");
-  record.setValue("time", "21");
+  record.setValue("value", "207");
+  record.setValue("date", "2020-11-07");
+  record.setValue("time", "18:28");
   model->insertRecord(-1, record);
   model->submitAll();
   model->lastError();
-  db->commit();
+  dbSQLITE->commit();
 }
 
 void NumbersDB::initMain() {
@@ -45,24 +43,12 @@ void NumbersDB::initMain() {
 
 void NumbersDB::initModel() {
   model->clear();
-  model->setTable(tr("Numbers"));
+  model->setTable(tableName);
   model->setEditStrategy(QSqlTableModel::EditStrategy::OnManualSubmit);
-  //  model->select();
-  model->setHeaderData(0, Qt::Horizontal, tr("value"));
-  model->setHeaderData(1, Qt::Horizontal, tr("date"));
-  model->setHeaderData(2, Qt::Horizontal, tr("time"));
 }
 
-void NumbersDB::createDB() {
-  *db = QSqlDatabase::addDatabase("QSQLITE");
-  db->setDatabaseName(":memory:");
-  if (!db->open()) qDebug() << "not opened!";
-
-  QSqlQuery query;
-  query.exec(
-      "create table Numbers (value varchar(20), "
-      "date varchar(20) , time varchar(20))");
-  query.lastError();
-  query.exec("insert into Numbers values('107', '2020-07-08', '20:17')");
-  query.lastError();
+void NumbersDB::createTable() {
+  dbQuery(
+      "create table Numbers (value varchar(20), date varchar(20) , time "
+      "varchar(20))");
 }

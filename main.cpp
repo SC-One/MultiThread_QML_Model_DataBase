@@ -2,7 +2,6 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include "Macros.h"
 #include "NumbersDB.h"
 int main(int argc, char *argv[]) {
   qmlRegisterType<NumbersDB>(mcModule, 1, 0, "NumbersDB");

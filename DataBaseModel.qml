@@ -30,18 +30,14 @@ Item {
 
         TableView
         {
-            id:listView
+            id:tableView
             anchors.horizontalCenter: parent.horizontalCenter
             height: parent.height*0.9
             width: parent.width
+            model:myModel
             TableViewColumn { role: "value"; title: "value"; width: 100 }
             TableViewColumn { role: "date"; title: "date"; width: 100 }
             TableViewColumn { role: "time"; title: "time"; width: 100 }
         }
-    }
-    Component.onCompleted:
-    {
-
-        listView.model=myModel;
     }
 }

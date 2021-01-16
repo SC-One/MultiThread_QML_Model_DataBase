@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QtSql/QSqlTableModel>
 #include <thread>
+
+#include "Macros.h"
 class NumbersDB : public QObject {
   Q_OBJECT
   Q_PROPERTY(QSqlTableModel *model READ getModel NOTIFY modelChanged)
@@ -22,9 +24,9 @@ class NumbersDB : public QObject {
  private:
   void initMain();
   void initModel();
-  void createDB();
-  std::unique_ptr<QSqlDatabase> db;
+  void createTable();
   std::unique_ptr<NumbersSqlTableModel> model;
+  const QString tableName;
   //  std::thread worker;
 };
 
