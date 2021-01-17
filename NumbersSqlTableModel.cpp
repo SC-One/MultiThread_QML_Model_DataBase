@@ -9,6 +9,12 @@ NumbersSqlTableModel::NumbersSqlTableModel(QObject *parent, QSqlDatabase db)
     : QSqlTableModel(parent, db)
 
 {
+  connect(this, &QSqlTableModel::beforeInsert, this,
+          []() { qDebug() << "start inserting"; });
+  connect(this, &QSqlTableModel::beforeUpdate, this,
+          []() { qDebug() << "before update"; });
+  connect(this, &QSqlTableModel::primeInsert, this,
+          []() { qDebug() << "prime insert"; });
   generateHeaders();
   generateRoleNames();
 }

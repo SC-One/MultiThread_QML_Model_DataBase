@@ -6,11 +6,13 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QTime>
 #include <QtWidgets/QTableView>
-
-NumbersDB::NumbersDB(QObject *parent)
+#include <chrono>
+NumbersDB::NumbersDB(QObject* parent)
     : QObject(parent),
-      tableName{"Numbers"}
+      tableName{"Numbers"},
+      working{false}
 
 {
   createTable();
@@ -19,30 +21,44 @@ NumbersDB::NumbersDB(QObject *parent)
 }
 
 void NumbersDB::addFakeValues() {
-  QDate date;
-  QLocale::system().toString(date);
-  QTime time;
-  QLocale::system().toString(time);
-
-  model->database().transaction();
+  dbSQLITE->transaction();
   QSqlRecord record = model->record();
   model->select();
-  record.setValue("value", "207");
-  record.setValue("date", "2020-11-07");
-  record.setValue("time", "18:28");
+  record.setValue("value", QString::number(qrand()));
+  record.setValue("date", QDate::currentDate().toString());
+  record.setValue("time", QTime::currentTime().toString());
   model->insertRecord(-1, record);
   model->submitAll();
-  model->lastError();
   dbSQLITE->commit();
 }
 
-void NumbersDB::initMain() {
-  initModel();
-  addFakeValues();
+void NumbersDB::startAdding() {
+  if (!working) {
+    working = true;
+    worker = std::thread([&]() {
+      using namespace std::chrono_literals;
+      while (working) {
+        qDebug() << "Hi start adding";
+        addFakeValues();
+        std::this_thread::sleep_for(1000ms);
+      }
+    });
+  }
 }
+
+void NumbersDB::stopAdding() {
+  if (working) {
+    working = false;
+    if (worker.joinable()) worker.join();
+    qDebug() << "worker finished";
+  }
+}
+
+void NumbersDB::initMain() { initModel(); }
 
 void NumbersDB::initModel() {
   model->clear();
+  //  model->select();
   model->setTable(tableName);
   model->setEditStrategy(QSqlTableModel::EditStrategy::OnManualSubmit);
 }

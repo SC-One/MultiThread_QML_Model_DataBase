@@ -9,12 +9,18 @@ Item {
     {
         id:column
         anchors.fill: parent
+        spacing: 20
         Row
         {
             id:row
             height: parent.height*0.1;
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 50
+            Button
+            {
+                text:qsTr("start")
+                onClicked:models.startAdding();
+            }
             Text {
                 id: lblSum
                 text: qsTr("Sum of numbers: ")
@@ -24,6 +30,11 @@ Item {
                 id: sumNumber
                 text: "myModel"
                 color: (sumNumber.text.toInt<1000?"green":"red")
+            }
+            Button
+            {
+                text:qsTr("stop")
+                onClicked: models.stopAdding();
             }
 
         }
@@ -35,9 +46,10 @@ Item {
             height: parent.height*0.9
             width: parent.width
             model:myModel
-            TableViewColumn { role: "value"; title: "value"; width: 100 }
-            TableViewColumn { role: "date"; title: "date"; width: 100 }
-            TableViewColumn { role: "time"; title: "time"; width: 100 }
+            TableViewColumn { role: "value"; title: "value"; width: 150 }
+            TableViewColumn { role: "date"; title: "date"; width: 150 }
+            TableViewColumn { role: "time"; title: "time"; width: 150 }
         }
+
     }
 }
